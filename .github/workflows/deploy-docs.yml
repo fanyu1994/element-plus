@@ -4,6 +4,7 @@ on:
   workflow_run:
     workflows: ['Publish to NPM registry']
     types: [completed]
+  workflow_dispatch:
 
 jobs:
   deploy-docs:
@@ -15,6 +16,7 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
           persist-credentials: false
+          fetch-depth: 0
 
       - name: Setup node
         uses: actions/setup-node@v2

@@ -2,7 +2,7 @@ import path from 'path'
 import glob from 'fast-glob'
 import Git from 'simple-git'
 import md5 from 'md5'
-import { projRoot } from '../utils/paths'
+import { docRoot, projRoot } from '../utils/paths'
 import type { Plugin } from 'vite'
 
 const git = Git({
@@ -58,6 +58,8 @@ export async function getContributors() {
         await getContributorsAt([
           path.resolve(projRoot, `packages/components/${name}`),
           path.resolve(projRoot, `packages/theme-chalk/src/${name}*`),
+          path.resolve(docRoot, `examples/${name}`),
+          path.resolve(docRoot, `en-US/component/${name}*`),
         ]),
       ]
     })

@@ -25,9 +25,7 @@ const contributors = computed(() => _contributors[props.id])
             :src="`https://gravatar.com/avatar/${c.hash}?d=retro`"
             class="w-8 h-8 rounded-full"
           />
-          <el-badge :value="c.count">
-            <span class="px-2">{{ c.name }}</span>
-          </el-badge>
+          {{ c.name }}
         </a>
       </div>
     </div>

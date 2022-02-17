@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { useData } from 'vitepress'
 import { computed } from 'vue'
 // @ts-expect-error missing types
 import _contributors from '/virtual-contributors'
+import VpLink from '../common/vp-link.vue'
 
 const props = defineProps<{ id: string }>()
-const { theme } = useData()
 
 const contributors = computed(() => _contributors[props.id])
 </script>
@@ -14,19 +13,13 @@ const contributors = computed(() => _contributors[props.id])
   <div class="mb-4">
     <div class="flex flex-wrap gap-4 pt-2">
       <div v-for="c of contributors" :key="c.hash">
-        <a
-          :href="`https://github.com/${theme.repo}/commits/${
-            theme.branch
-          }/packages/components/${id}?author=${encodeURIComponent(c.email)}`"
-          target="_blank"
-          class="flex gap-2 items-center link"
-        >
+        <VpLink href="#link-to-profile" class="flex gap-2 items-center link">
           <img
             :src="`https://gravatar.com/avatar/${c.hash}?d=retro`"
             class="w-8 h-8 rounded-full"
           />
           {{ c.name }}
-        </a>
+        </VpLink>
       </div>
     </div>
   </div>
@@ -34,13 +27,10 @@ const contributors = computed(() => _contributors[props.id])
 
 <style lang="scss" scoped>
 .link {
-  display: inline-block;
-  font-weight: 500;
   color: var(--text-color-light);
-}
 
-.link:hover {
-  text-decoration: none;
-  color: var(--brand-color);
+  &:hover {
+    color: var(--brand-color);
+  }
 }
 </style>

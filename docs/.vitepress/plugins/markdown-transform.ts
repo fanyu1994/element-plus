@@ -2,6 +2,8 @@ import fs from 'fs'
 import path from 'path'
 import { docRoot, projRoot } from '../utils/paths'
 import { branch, docsDir, repo } from '../vitepress/constant'
+import { getLang } from '../utils/lang'
+import footerLocale from '../i18n/component/footer.json'
 import type { Plugin } from 'vite'
 
 type Append = Record<'headers' | 'footers' | 'scriptSetups', string[]>
@@ -26,7 +28,7 @@ export function MarkdownTransform(): Plugin {
 
       const compPath = path.resolve(docRoot, 'en-US/component')
       if (id.startsWith(compPath)) {
-        code = transformComponentMarkdown(componentId, code, append)
+        code = transformComponentMarkdown(id, componentId, code, append)
       }
 
       return combineMarkdown(
@@ -75,36 +77,35 @@ const GITHUB_BLOB_URL = `https://github.com/${repo}/blob/${branch}`
 const GITHUB_TREE_URL = `https://github.com/${repo}/tree/${branch}`
 const transformComponentMarkdown = (
   id: string,
+  componentId: string,
   code: string,
   append: Append
 ) => {
-  const docUrl = `${GITHUB_BLOB_URL}/${docsDir}/en-US/component/${id}.md`
-  const componentUrl = `${GITHUB_TREE_URL}/packages/components/${id}`
-  const componentPath = path.resolve(projRoot, `packages/components/${id}`)
+  const lang = getLang(id)
+  const docUrl = `${GITHUB_BLOB_URL}/${docsDir}/en-US/component/${componentId}.md`
+  const componentUrl = `${GITHUB_TREE_URL}/packages/components/${componentId}`
+  const componentPath = path.resolve(
+    projRoot,
+    `packages/components/${componentId}`
+  )
   const isComponent = fs.existsSync(componentPath)
 
-  append.scriptSetups.push(`
-import { useLocale } from '../../.vitepress/vitepress/composables/locale'
-import footerLocale from '../../.vitepress/i18n/component/footer.json'
-const footer = useLocale(footerLocale)
-`)
-
-  const links = [['{{ footer.docs }}', docUrl]]
-  if (isComponent) links.unshift(['{{ footer.component }}', componentUrl])
+  const links = [[footerLocale[lang].docs, docUrl]]
+  if (isComponent) links.unshift([footerLocale[lang].component, componentUrl])
   const linksText = links
     .filter((i) => i)
     .map(([text, link]) => `[${text}](${link})`)
     .join(' • ')
 
-  const sourceSection = `## {{ footer.source }}
+  const sourceSection = `## ${footerLocale[lang].source}
 
 ${linksText}
 `
 
   const contributorsSection = `
-## {{ footer.contributors }}
+## ${footerLocale[lang].contributors}
 
-<Contributors id="${id}" />
+<Contributors id="${componentId}" />
 `
 
   append.footers.push(sourceSection, isComponent ? contributorsSection : '')
